@@ -81,3 +81,45 @@ export function StatusMessageBadge({
 
   return <Badge variant="tertiary">{statusMessage}</Badge>;
 }
+
+export function TimePerOutputTokenBadge({
+  timePerOutputToken,
+}: {
+  timePerOutputToken: number | null | undefined;
+}) {
+  if (timePerOutputToken == null) return null;
+
+  return (
+    <Badge variant="tertiary">
+      Time per output token: {formatIntervalSeconds(timePerOutputToken)}
+    </Badge>
+  );
+}
+
+export function TokensPerSecondBadge({
+  tokensPerSecond,
+}: {
+  tokensPerSecond: number | null | undefined;
+}) {
+  if (tokensPerSecond == null) return null;
+
+  return (
+    <Badge variant="tertiary">
+      Tokens per second: {tokensPerSecond.toFixed(1)}
+    </Badge>
+  );
+}
+
+export function TimeBetweenTokensBadge({
+  timeBetweenTokens,
+}: {
+  timeBetweenTokens: number | null | undefined;
+}) {
+  if (timeBetweenTokens == null) return null;
+
+  return (
+    <Badge variant="tertiary">
+      Time between tokens: {formatIntervalSeconds(timeBetweenTokens)}
+    </Badge>
+  );
+}

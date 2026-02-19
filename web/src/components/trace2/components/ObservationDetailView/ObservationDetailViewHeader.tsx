@@ -33,6 +33,9 @@ import {
   VersionBadge,
   LevelBadge,
   StatusMessageBadge,
+  TimePerOutputTokenBadge,
+  TokensPerSecondBadge,
+  TimeBetweenTokensBadge,
 } from "./ObservationMetadataBadgesSimple";
 import {
   SessionBadge,
@@ -188,6 +191,15 @@ export const ObservationDetailViewHeader = memo(
             <LatencyBadge latencySeconds={latencySeconds} />
             <TimeToFirstTokenBadge
               timeToFirstToken={observation.timeToFirstToken}
+            />
+            <TimePerOutputTokenBadge
+              timePerOutputToken={observation.timePerOutputToken}
+            />
+            <TokensPerSecondBadge
+              tokensPerSecond={observation.tokensPerSecond}
+            />
+            <TimeBetweenTokensBadge
+              timeBetweenTokens={observation.timeBetweenTokens}
             />
             <SessionBadge
               sessionId={observation.sessionId ?? null}

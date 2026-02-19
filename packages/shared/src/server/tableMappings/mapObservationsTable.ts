@@ -113,6 +113,22 @@ export const observationsTableUiColumnDefinitions: UiColumnMappings = [
       "(arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, usage_details))) / (date_diff('millisecond', start_time, end_time) / 1000))",
   },
   {
+    uiTableName: "Time per output token (s)",
+    uiTableId: "timePerOutputToken",
+    clickhouseTableName: "observations",
+    clickhouseSelect:
+      "if(isNull(completion_start_time) OR isNull(end_time) OR usage_details['output'] = 0, NULL, date_diff('millisecond', completion_start_time, end_time) / 1000 / usage_details['output'])",
+    clickhouseTypeOverwrite: "Decimal64(6)",
+  },
+  {
+    uiTableName: "Time between tokens (s)",
+    uiTableId: "timeBetweenTokens",
+    clickhouseTableName: "observations",
+    clickhouseSelect:
+      "if(isNull(completion_start_time) OR isNull(end_time) OR usage_details['output'] = 0, NULL, date_diff('millisecond', completion_start_time, end_time) / 1000 / usage_details['output'])",
+    clickhouseTypeOverwrite: "Decimal64(6)",
+  },
+  {
     uiTableName: "Input Cost ($)",
     uiTableId: "inputCost",
     clickhouseTableName: "observations",

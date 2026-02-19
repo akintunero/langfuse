@@ -289,6 +289,31 @@ export const ObservationPreview = ({
                     </Badge>
                   ) : null}
 
+                  {preloadedObservation.timePerOutputToken ? (
+                    <Badge variant="tertiary">
+                      Time per output token:{" "}
+                      {formatIntervalSeconds(
+                        preloadedObservation.timePerOutputToken,
+                      )}
+                    </Badge>
+                  ) : null}
+
+                  {preloadedObservation.tokensPerSecond ? (
+                    <Badge variant="tertiary">
+                      Tokens per second:{" "}
+                      {preloadedObservation.tokensPerSecond.toFixed(1)}
+                    </Badge>
+                  ) : null}
+
+                  {preloadedObservation.timeBetweenTokens ? (
+                    <Badge variant="tertiary">
+                      Time between tokens:{" "}
+                      {formatIntervalSeconds(
+                        preloadedObservation.timeBetweenTokens,
+                      )}
+                    </Badge>
+                  ) : null}
+
                   {preloadedObservation.environment ? (
                     <Badge variant="tertiary">
                       Env: {preloadedObservation.environment}

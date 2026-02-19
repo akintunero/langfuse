@@ -536,6 +536,9 @@ export type ObservationTableQuery = {
 export type ObservationsTableQueryResult = ObservationRecordReadType & {
   latency?: string;
   time_to_first_token?: string;
+  time_per_output_token?: string;
+  tokens_per_second?: string;
+  time_between_tokens?: string;
   trace_tags?: string[];
   trace_name?: string;
   trace_user_id?: string;
@@ -611,6 +614,13 @@ export const getObservationsTableWithModelData = async (
       timeToFirstToken: o.time_to_first_token
         ? Number(o.time_to_first_token) / 1000
         : null,
+      timePerOutputToken: o.time_per_output_token
+        ? Number(o.time_per_output_token) / 1000
+        : null,
+      tokensPerSecond: o.tokens_per_second ? Number(o.tokens_per_second) : null,
+      timeBetweenTokens: o.time_between_tokens
+        ? Number(o.time_between_tokens) / 1000
+        : null,
       traceName: trace?.name ?? null,
       traceTags: trace?.tags ?? [],
       traceTimestamp: trace?.timestamp ?? null,
@@ -665,6 +675,9 @@ const getObservationsTableInternal = async <T>(
         internal_model_id as "internal_model_id",
         if(isNull(end_time), NULL, date_diff('millisecond', start_time, end_time)) as latency,
         if(isNull(completion_start_time), NULL,  date_diff('millisecond', start_time, completion_start_time)) as "time_to_first_token",
+        if(isNull(completion_start_time) OR isNull(end_time) OR usage_details['output'] = 0, NULL, date_diff('millisecond', completion_start_time, end_time) / usage_details['output']) as "time_per_output_token",
+        if(isNull(completion_start_time) OR isNull(end_time) OR usage_details['output'] = 0, NULL, usage_details['output'] / (date_diff('millisecond', completion_start_time, end_time) / 1000)) as "tokens_per_second",
+        if(isNull(completion_start_time) OR isNull(end_time) OR usage_details['output'] = 0, NULL, date_diff('millisecond', completion_start_time, end_time) / usage_details['output']) as "time_between_tokens",
         length(mapKeys(o.tool_definitions)) as "tool_definitions_count",
         length(o.tool_calls) as "tool_calls_count"`;
 

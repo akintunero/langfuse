@@ -279,6 +279,70 @@ export function convertObservationPartial(
             1000
           : null,
     }),
+
+    // Streaming latency metrics
+    ...((record.completion_start_time !== undefined ||
+      record.end_time !== undefined) && {
+      streamingLatency:
+        record.completion_start_time && record.end_time
+          ? (parseClickhouseUTCDateTimeFormat(record.end_time).getTime() -
+              parseClickhouseUTCDateTimeFormat(
+                record.completion_start_time,
+              ).getTime()) /
+            1000
+          : null,
+    }),
+
+    // Time per output token (efficiency metric)
+    ...((record.completion_start_time !== undefined ||
+      record.end_time !== undefined ||
+      record.usage_details !== undefined) && {
+      timePerOutputToken:
+        record.completion_start_time &&
+        record.end_time &&
+        record.usage_details?.output
+          ? (parseClickhouseUTCDateTimeFormat(record.end_time).getTime() -
+              parseClickhouseUTCDateTimeFormat(
+                record.completion_start_time,
+              ).getTime()) /
+            1000 /
+            record.usage_details.output
+          : null,
+    }),
+
+    // Tokens per second (throughput metric)
+    ...((record.completion_start_time !== undefined ||
+      record.end_time !== undefined ||
+      record.usage_details !== undefined) && {
+      tokensPerSecond:
+        record.completion_start_time &&
+        record.end_time &&
+        record.usage_details?.output
+          ? record.usage_details.output /
+            ((parseClickhouseUTCDateTimeFormat(record.end_time).getTime() -
+              parseClickhouseUTCDateTimeFormat(
+                record.completion_start_time,
+              ).getTime()) /
+              1000)
+          : null,
+    }),
+
+    // Time between tokens (inter-token latency)
+    ...((record.completion_start_time !== undefined ||
+      record.end_time !== undefined ||
+      record.usage_details !== undefined) && {
+      timeBetweenTokens:
+        record.completion_start_time &&
+        record.end_time &&
+        record.usage_details?.output
+          ? (parseClickhouseUTCDateTimeFormat(record.end_time).getTime() -
+              parseClickhouseUTCDateTimeFormat(
+                record.completion_start_time,
+              ).getTime()) /
+            1000 /
+            record.usage_details.output
+          : null,
+    }),
   };
 
   // V2 API: return partial observation (only fields that were present in record)
@@ -313,6 +377,9 @@ export function convertObservationPartial(
     promptVersion: partial.promptVersion ?? null,
     latency: partial.latency ?? null,
     timeToFirstToken: partial.timeToFirstToken ?? null,
+    timePerOutputToken: partial.timePerOutputToken ?? null,
+    tokensPerSecond: partial.tokensPerSecond ?? null,
+    timeBetweenTokens: partial.timeBetweenTokens ?? null,
     usageDetails: partial.usageDetails ?? {},
     costDetails: partial.costDetails ?? {},
     providedCostDetails: partial.providedCostDetails ?? {},

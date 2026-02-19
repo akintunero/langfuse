@@ -96,6 +96,22 @@ export const observationsTableCols: ColumnDefinition[] = [
     nullable: true,
   },
   {
+    name: "Time per output token (s)",
+    id: "timePerOutputToken",
+    type: "number",
+    internal:
+      'CASE WHEN o."completion_tokens" > 0 THEN EXTRACT(EPOCH FROM (o."end_time" - o."completion_start_time")) / o."completion_tokens" ELSE NULL END',
+    nullable: true,
+  },
+  {
+    name: "Time between tokens (s)",
+    id: "timeBetweenTokens",
+    type: "number",
+    internal:
+      'CASE WHEN o."completion_tokens" > 0 THEN EXTRACT(EPOCH FROM (o."end_time" - o."completion_start_time")) / o."completion_tokens" ELSE NULL END',
+    nullable: true,
+  },
+  {
     name: "Input Cost ($)",
     id: "inputCost",
     type: "number",
