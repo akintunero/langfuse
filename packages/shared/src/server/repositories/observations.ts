@@ -1768,7 +1768,20 @@ export const getObservationsForBlobStorageExport = function (
   projectId: string,
   minTimestamp: Date,
   maxTimestamp: Date,
+  filter?: FilterState,
 ) {
+  // Build filter conditions
+  const observationsFilter = new FilterList([]);
+  if (filter && filter.length > 0) {
+    observationsFilter.push(
+      ...createFilterFromFilterState(
+        filter,
+        observationsTableUiColumnDefinitions,
+      ),
+    );
+  }
+  const appliedObservationsFilter = observationsFilter.apply();
+
   const query = `
     SELECT
       id,
@@ -1797,6 +1810,7 @@ export const getObservationsForBlobStorageExport = function (
     WHERE project_id = {projectId: String}
     AND start_time >= {minTimestamp: DateTime64(3)}
     AND start_time <= {maxTimestamp: DateTime64(3)}
+    ${appliedObservationsFilter.query ? `AND ${appliedObservationsFilter.query}` : ""}
   `;
 
   const records = queryClickhouseStream<Record<string, unknown>>({
@@ -1805,6 +1819,7 @@ export const getObservationsForBlobStorageExport = function (
       projectId,
       minTimestamp: convertDateToClickhouseDateTime(minTimestamp),
       maxTimestamp: convertDateToClickhouseDateTime(maxTimestamp),
+      ...appliedObservationsFilter.params,
     },
     tags: {
       feature: "blobstorage",

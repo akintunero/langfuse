@@ -1328,8 +1328,18 @@ export const getTracesForBlobStorageExport = function (
   projectId: string,
   minTimestamp: Date,
   maxTimestamp: Date,
+  filter?: FilterState,
 ) {
   const traceTable = "traces";
+
+  // Build filter conditions
+  const tracesFilter = new FilterList([]);
+  if (filter && filter.length > 0) {
+    tracesFilter.push(
+      ...createFilterFromFilterState(filter, tracesTableUiColumnDefinitions),
+    );
+  }
+  const appliedTracesFilter = tracesFilter.apply();
 
   const query = `
     SELECT
@@ -1352,6 +1362,7 @@ export const getTracesForBlobStorageExport = function (
     WHERE project_id = {projectId: String}
     AND timestamp >= {minTimestamp: DateTime64(3)}
     AND timestamp <= {maxTimestamp: DateTime64(3)}
+    ${appliedTracesFilter.query ? `AND ${appliedTracesFilter.query}` : ""}
   `;
 
   return queryClickhouseStream<Record<string, unknown>>({
@@ -1360,6 +1371,7 @@ export const getTracesForBlobStorageExport = function (
       projectId,
       minTimestamp: convertDateToClickhouseDateTime(minTimestamp),
       maxTimestamp: convertDateToClickhouseDateTime(maxTimestamp),
+      ...appliedTracesFilter.params,
     },
     tags: {
       feature: "blobstorage",

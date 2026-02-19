@@ -47,6 +47,14 @@ export const blobStorageIntegrationRouter = createTRPCRouter({
           return null;
         }
 
+        // Ensure filter is properly typed as FilterState or null
+        if (config.filter) {
+          return {
+            ...config,
+            filter: config.filter as any[],
+          };
+        }
+
         return config;
       } catch (e) {
         logger.error(`Failed to get blob storage integration`, e);
@@ -89,6 +97,7 @@ export const blobStorageIntegrationRouter = createTRPCRouter({
           exportMode,
           exportStartDate,
           exportSource,
+          filter,
         } = input;
 
         const isSelfHosted = !env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION;
@@ -127,6 +136,7 @@ export const blobStorageIntegrationRouter = createTRPCRouter({
           exportMode,
           exportStartDate: finalExportStartDate,
           exportSource,
+          filter: filter || null,
         };
 
         // Use a transaction to check if record exists, then create or update

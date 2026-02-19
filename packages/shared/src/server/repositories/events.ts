@@ -2498,7 +2498,16 @@ export const getEventsForBlobStorageExport = function (
   projectId: string,
   minTimestamp: Date,
   maxTimestamp: Date,
+  filter?: FilterState,
 ) {
+  // Build filter conditions
+  const eventsFilter = new FilterList([]);
+  if (filter && filter.length > 0) {
+    eventsFilter.push(
+      ...createFilterFromFilterState(filter, eventsTableUiColumnDefinitions),
+    );
+  }
+
   const queryBuilder = new EventsQueryBuilder({ projectId })
     .selectFieldSet("export")
     .selectIO(false) // Full I/O, no truncation
@@ -2511,6 +2520,7 @@ export const getEventsForBlobStorageExport = function (
       },
     )
     .whereRaw("e.is_deleted = 0")
+    .applyFilters(eventsFilter) // Apply user filters
     .limitBy("e.span_id", "e.project_id");
 
   const { query, params } = queryBuilder.buildWithParams();

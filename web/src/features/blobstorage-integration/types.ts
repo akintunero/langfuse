@@ -4,6 +4,7 @@ import {
   BlobStorageIntegrationFileType,
   BlobStorageExportMode,
   AnalyticsIntegrationExportSource,
+  filterCondition,
 } from "@langfuse/shared";
 
 export const blobStorageIntegrationFormSchema = z.object({
@@ -33,6 +34,7 @@ export const blobStorageIntegrationFormSchema = z.object({
   exportSource: z
     .enum(AnalyticsIntegrationExportSource)
     .default(AnalyticsIntegrationExportSource.TRACES_OBSERVATIONS),
+  filter: z.array(filterCondition).optional(),
 });
 
 export type BlobStorageIntegrationFormSchema = z.infer<

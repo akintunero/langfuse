@@ -1113,6 +1113,7 @@ model BlobStorageIntegration {
   exportMode      BlobStorageExportMode             @default(FULL_HISTORY) @map("export_mode")
   exportStartDate DateTime?                         @map("export_start_date")
   exportSource    AnalyticsIntegrationExportSource  @default(TRACES_OBSERVATIONS) @map("export_source")
+  filter          Json?                             @map("filter")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")

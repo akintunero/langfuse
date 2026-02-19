@@ -158,6 +158,7 @@ const processBlobStorageExport = async (config: {
   type: BlobStorageIntegrationType;
   table: "traces" | "observations" | "scores" | "observations_v2"; // observations_v2 is the events table
   fileType: BlobStorageIntegrationFileType;
+  filter?: any; // FilterState from @langfuse/shared
 }) => {
   logger.info(
     `[BLOB INTEGRATION] Processing ${config.table} export for project ${config.projectId}`,
@@ -196,6 +197,7 @@ const processBlobStorageExport = async (config: {
           config.projectId,
           config.minTimestamp,
           config.maxTimestamp,
+          config.filter,
         );
         break;
       case "observations":
@@ -203,6 +205,7 @@ const processBlobStorageExport = async (config: {
           config.projectId,
           config.minTimestamp,
           config.maxTimestamp,
+          config.filter,
         );
         break;
       case "scores":
@@ -210,6 +213,7 @@ const processBlobStorageExport = async (config: {
           config.projectId,
           config.minTimestamp,
           config.maxTimestamp,
+          config.filter,
         );
         break;
       case "observations_v2": // observations_v2 is the events table
@@ -217,6 +221,7 @@ const processBlobStorageExport = async (config: {
           config.projectId,
           config.minTimestamp,
           config.maxTimestamp,
+          config.filter,
         );
         break;
       default:
@@ -353,6 +358,7 @@ export const handleBlobStorageIntegrationProjectJob = async (
       forcePathStyle: blobStorageIntegration.forcePathStyle || undefined,
       type: blobStorageIntegration.type,
       fileType: blobStorageIntegration.fileType,
+      filter: blobStorageIntegration.filter,
     };
 
     // Check if this project should only export traces (legacy behavior via env var)

@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { filterCondition } from "@langfuse/shared";
 
 /**
  * Enums
@@ -45,6 +46,7 @@ export const CreateBlobStorageIntegrationRequest = z
     fileType: BlobStorageIntegrationFileType,
     exportMode: BlobStorageExportMode,
     exportStartDate: z.coerce.date().nullable().optional(),
+    filter: z.array(filterCondition).optional(),
   })
   .strict()
   .refine(
@@ -78,6 +80,7 @@ export const BlobStorageIntegrationResponse = z
     lastSyncAt: z.coerce.date().nullable(),
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
+    filter: z.array(filterCondition).optional(),
   })
   .strict();
 

@@ -1529,7 +1529,17 @@ export const getScoresForBlobStorageExport = function (
   projectId: string,
   minTimestamp: Date,
   maxTimestamp: Date,
+  filter?: FilterState,
 ) {
+  // Build filter conditions
+  const scoresFilter = new FilterList([]);
+  if (filter && filter.length > 0) {
+    scoresFilter.push(
+      ...createFilterFromFilterState(filter, scoresTableUiColumnDefinitions),
+    );
+  }
+  const appliedScoresFilter = scoresFilter.apply();
+
   const query = `
     SELECT
       id,
@@ -1549,6 +1559,7 @@ export const getScoresForBlobStorageExport = function (
     AND timestamp >= {minTimestamp: DateTime64(3)}
     AND timestamp <= {maxTimestamp: DateTime64(3)}
     AND data_type IN ({dataTypes: Array(String)})
+    ${appliedScoresFilter.query ? `AND ${appliedScoresFilter.query}` : ""}
   `;
 
   const records = queryClickhouseStream<Record<string, unknown>>({
@@ -1558,6 +1569,7 @@ export const getScoresForBlobStorageExport = function (
       minTimestamp: convertDateToClickhouseDateTime(minTimestamp),
       maxTimestamp: convertDateToClickhouseDateTime(maxTimestamp),
       dataTypes: AGGREGATABLE_SCORE_TYPES,
+      ...appliedScoresFilter.params,
     },
     tags: {
       feature: "blobstorage",
